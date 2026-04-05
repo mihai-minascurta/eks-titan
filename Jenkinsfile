@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('1. Download Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/mihai-minascurta/YOUR_REPO_NAME.git' // <-- CHANGE TO YOUR REPO
+                git branch: 'main', url: 'https://github.com/mihai-minascurta/eks-titan.git' // <-- CHANGE TO YOUR REPO
             }
         }
         
