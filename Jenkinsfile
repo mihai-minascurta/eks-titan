@@ -1,29 +1,35 @@
 pipeline {
     agent any
     
+    // 1. THE BRAIN: Asking you for the command
+    parameters {
+        choice(name: 'ACTION', choices: ['APPLY', 'DESTROY'], description: 'Do you want to build or burn the Matrix?')
+    }
+    
     stages {
         stage('1. Download Code') {
             steps {
-                // The Robot pulls your code from GitHub
-                git branch: 'main', url: 'https://github.com/mihai-minascurta/eks-titan.git'
+                git branch: 'main', url: 'https://github.com/mihai-minascurta/YOUR_REPO_NAME.git' // <-- CHANGE TO YOUR REPO
             }
         }
         
-        stage('2. Build the Matrix (Terraform)') {
+        stage('2. Execute Terraform') {
             steps {
-                // The Robot goes into the folder with your .tf files
-                // CHANGE 'main' to '.' if your tf files are in the root folder!
-                dir('main') { 
+                dir('main') { // <-- Change 'main' to '.' if your .tf files are in the root folder
                     sh 'terraform init'
-                    sh 'terraform apply -auto-approve'
+                    
+                    // 2. THE LOGIC: Reading your choice
+                    script {
+                        if (params.ACTION == 'APPLY') {
+                            echo "Executing Build Sequence..."
+                            sh 'terraform apply -auto-approve'
+                        } 
+                        else if (params.ACTION == 'DESTROY') {
+                            echo "Executing Demolition Sequence..."
+                            sh 'terraform destroy -auto-approve'
+                        }
+                    }
                 }
-            }
-        }
-        
-        stage('3. Connect to the Brain') {
-            steps {
-                // The Robot securely gets the keys to your EKS Cluster
-                sh 'aws eks update-kubeconfig --region eu-central-1 --name titan-eks-cluster'
             }
         }
     }
